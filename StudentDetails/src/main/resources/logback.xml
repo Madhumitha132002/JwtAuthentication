@@ -1,0 +1,52 @@
+<configuration>
+    <!-- Appender for Controller -->
+    <appender name="CONTROLLER_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>controller.log</file>
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Appender for Repository -->
+    <appender name="REPOSITORY_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>repository.log</file>
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Appender for Service -->
+    <appender name="SERVICE_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>service.log</file>
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Console Appender Configuration -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <!-- Logger Configuration for Controller -->
+    <logger name="com.SpringBootProject.StudentDetails.Controller" level="info" additivity="false">
+        <appender-ref ref="CONTROLLER_FILE"/>
+    </logger>
+
+    <!-- Logger Configuration for Repository -->
+    <logger name="com.SpringBootProject.StudentDetails.Repository" level="info" additivity="false">
+       <appender-ref ref="REPOSITORY_FILE"/>
+    </logger>
+    
+    <!-- Logger Configuration for Service -->
+    <logger name="com.SpringBootProject.StudentDetails.Service" level="info" additivity="false">
+        <appender-ref ref="SERVICE_FILE"/>
+    </logger>
+
+    <!-- Root Logger Configuration -->
+    <root level="info">
+        <appender-ref ref="CONSOLE"/> <!-- Referencing Console Appender -->
+    </root>
+</configuration>
