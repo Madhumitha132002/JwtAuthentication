@@ -616,3 +616,5 @@
 2024-03-15 17:59:15,929 [http-nio-8080-exec-4] INFO  c.S.S.S.StudentDetailsServiceImpl - Details retrieved successfully
 2024-03-15 19:18:36,945 [http-nio-8080-exec-5] INFO  c.S.S.S.StudentDetailsServiceImpl - Details retrieved successfully
 2024-03-15 19:18:58,657 [http-nio-8080-exec-6] INFO  c.S.S.S.StudentDetailsServiceImpl - Details retrieved successfully
+2024-03-18 11:50:13,677 [http-nio-8080-exec-2] INFO  c.S.S.S.StudentDetailsServiceImpl - Details Retrived Successfully
+2024-03-18 11:54:36,592 [http-nio-8080-exec-4] INFO  c.S.S.S.StudentDetailsServiceImpl - Details Retrived Successfully

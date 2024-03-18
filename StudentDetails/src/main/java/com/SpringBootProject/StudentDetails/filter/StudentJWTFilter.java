@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.SpringBootProject.StudentDetails.Model.CustomerModel;
 import com.SpringBootProject.StudentDetails.util.StudentJWTUtil;
 
 import jakarta.servlet.FilterChain;
@@ -25,6 +26,8 @@ public class StudentJWTFilter  extends OncePerRequestFilter{
 	private StudentJWTUtil jwtUtil;
 	@Autowired
 	private UserDetailsService userdetailsservice;
+	@Autowired
+	private CustomerModel customermodel;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

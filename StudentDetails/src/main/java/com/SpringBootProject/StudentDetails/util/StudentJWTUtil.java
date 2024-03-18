@@ -71,4 +71,9 @@ public class StudentJWTUtil {
         byte[] keyBytes= Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+	public UserDetails generateToken(UserDetails userDetails) {
+		// TODO Auto-generated method stub
+		return userDetails;
+	}
 }

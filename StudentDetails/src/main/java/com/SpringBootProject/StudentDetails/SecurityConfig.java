@@ -41,7 +41,7 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(requests -> requests
-				.requestMatchers("/login","/add","/refresh").permitAll()
+				.requestMatchers("/login","/add","/refresh","/download/CSV","/download/excel","/addcustomer").permitAll()
 				.anyRequest()
 				.authenticated())
 				.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
