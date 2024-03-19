@@ -2,7 +2,7 @@ package com.SpringBootProject.StudentDetails.Service;
 
 
 import com.SpringBootProject.StudentDetails.Model.CombinedProduct;
-import com.SpringBootProject.StudentDetails.Model.Product;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -18,6 +18,7 @@ public class PDFGenerator1 {
     public static ByteArrayInputStream generateBill(List<CombinedProduct> orderDetails) {
 
         Document document = new Document(PageSize.A4);
+       
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
@@ -33,6 +34,9 @@ public class PDFGenerator1 {
             customerCell.addElement(new Paragraph("Customer Name: " + orderDetails.get(0).getCustomerName()));
             customerCell.addElement(new Paragraph("Phone: " + orderDetails.get(0).getPhone()));
             customerCell.addElement(new Paragraph("Email: " + orderDetails.get(0).getEmail()));
+            customerCell.addElement(new Paragraph("Date : "+orderDetails.get(0).getTransaction_date()));
+            customerCell.addElement(new Paragraph("Time :"+orderDetails.get(0).getTransaction_time()));
+            
 
             customerTable.addCell(customerCell);
 
