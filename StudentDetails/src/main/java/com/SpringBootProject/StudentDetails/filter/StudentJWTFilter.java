@@ -26,8 +26,7 @@ public class StudentJWTFilter  extends OncePerRequestFilter{
 	private StudentJWTUtil jwtUtil;
 	@Autowired
 	private UserDetailsService userdetailsservice;
-	@Autowired
-	private CustomerModel customermodel;
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
