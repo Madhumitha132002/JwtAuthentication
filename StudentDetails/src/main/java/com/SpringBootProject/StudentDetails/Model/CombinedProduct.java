@@ -127,6 +127,7 @@ public class CombinedProduct {
 				+ transaction_id + ", transaction_date=" + transaction_date + ", transaction_time=" + transaction_time
 				+ ", qunatity=" + qunatity + "]";
 	}
+
     
    
     

@@ -1,14 +1,15 @@
 package com.SpringBootProject.StudentDetails.Repository;
 
 
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,7 +18,6 @@ import com.SpringBootProject.StudentDetails.Model.CombinedProduct;
 import com.SpringBootProject.StudentDetails.Model.CustomerModel;
 import com.SpringBootProject.StudentDetails.Model.Orders;
 import com.SpringBootProject.StudentDetails.Model.Product;
-import com.SpringBootProject.StudentDetails.Model.StudentModel;
 
 
 @Repository
@@ -77,10 +77,25 @@ public class customerDetailsRepo {
 	                productIds.add(product.getProductId());
 	                productQuantities.add(product.getQuantity());
 	            }
-
-	            // Now you have two separate arrays for product IDs and quantities
+	         
+	            // Now you have two separate arrays for product IDs rand quantities
 	            System.out.println("Product IDs: " + productIds);
 	            System.out.println("Product Quantities: " + productQuantities);
+	            
+	         // Assuming you have retrieved the list of products from the order object
+	            List<Product> product = orders.getProducts();
+
+	            // Initialize a map to store product quantities
+	            Map<Integer, Integer> productQuantityMap = new HashMap<>();
+
+	            // Iterate through the products and populate the map
+	            for (Product product1 : products) {
+	                productQuantityMap.put(product1.getProductId(), product1.getQuantity());
+	            }
+
+	            // Now productQuantityMap contains product quantities mapped to their IDs
+	            System.out.println(productQuantityMap);
+
 
 
 	         // Construct the SQL query with the correct 
@@ -107,15 +122,35 @@ public class customerDetailsRepo {
 	            // Print the retrieved combined products
 	            System.out.println(combinedProducts);
 
+	         // Iterate through the combined products
+	            for (CombinedProduct combinedProduct : combinedProducts) {
+	                // Get the product ID and quantity for the combined product
+	                int productId = combinedProduct.getProduct_id();
+	                int quantity =productQuantityMap.getOrDefault(productId, 0); // Get quantity from productQuantities map
 
-	// Calculate total price and set total amount for each combined product
-	for (CombinedProduct combinedProduct : combinedProducts) {
-	    totalAmount = combinedProduct.getPrice() * productQuantities.get(combinedProducts.indexOf(combinedProduct));
-	    combinedProduct.setQunatity(productQuantities.get(combinedProducts.indexOf(combinedProduct)));
-	    totalPrice+=totalAmount;
-	    combinedProduct.setTotalAmount(totalAmount);
-	    combinedProduct.setTotalPrice(totalPrice);
-	}
+	                // Check if the product ID exists in the productsDetailsMap
+	                if (productQuantityMap.containsKey(productId)) {
+	                    // Get the product details
+	                    Integer product1 = productQuantityMap.get(productId);
+	                    
+	                    // Calculate the total amount for the combined product
+	                    float totalAmount1 = combinedProduct.getPrice() * quantity;
+
+	                    // Set quantity, total amount, and total price for the combined product
+	                    combinedProduct.setQunatity(quantity);
+	                    combinedProduct.setTotalAmount(totalAmount1);
+	                    combinedProduct.setTotalPrice(totalPrice);
+	                    
+	                    // Update total price
+	                    totalPrice += totalAmount1;
+	                }
+	            }
+
+	            // Set total price for all combined products
+	            for (CombinedProduct combinedProduct : combinedProducts) {
+	                combinedProduct.setTotalPrice(totalPrice);
+	            }
+
 
 	// Extract customer details from the customer object
 	String customerName = customermodel.get(0).getCustomerName();

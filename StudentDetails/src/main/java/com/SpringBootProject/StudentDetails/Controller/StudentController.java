@@ -230,6 +230,8 @@ private static final int String = 0;
     	logInfo.info(""+student);
         return getAllStudentDetails;
     }
+	  
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/excel")
 	  public ResponseEntity<Resource> getFile() {
@@ -242,6 +244,8 @@ private static final int String = 0;
 	              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
 	              .body(file);
 	  }
+	  
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/excel/{studentId}")
 	  public ResponseEntity<Resource> getuserFile(@PathVariable int studentId) {
@@ -260,6 +264,7 @@ private static final int String = 0;
 	              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
 	              .body(file);
 	  } 
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/CSV")
 	  public ResponseEntity<Resource> getCSVFile() {
@@ -272,6 +277,8 @@ private static final int String = 0;
 	  .contentType(MediaType.parseMediaType("application/csv"))
 	  .body(file);
 	  }
+	  
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/CSV/{StudentId}")
 	  public ResponseEntity<Resource> getCSVFileUser(@PathVariable int StudentId) {
@@ -289,6 +296,9 @@ private static final int String = 0;
 	  .contentType(MediaType.parseMediaType("application/csv"))
 	  .body(file);
 	  }
+	  
+	  
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/PDF")
 	    public ResponseEntity<Resource> getPDFFile() {
@@ -302,6 +312,9 @@ private static final int String = 0;
 	                .contentType(MediaType.APPLICATION_PDF)
 	                .body(file);
 	    }
+	  
+	  
+	  
 	  @CrossOrigin(origins = "*")
 	  @GetMapping("/download/PDF/{StudentId}")
 	  public ResponseEntity<Resource> getPDFFileUser(@PathVariable int StudentId) {
