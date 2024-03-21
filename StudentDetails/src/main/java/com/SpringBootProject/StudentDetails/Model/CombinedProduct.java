@@ -2,6 +2,7 @@ package com.SpringBootProject.StudentDetails.Model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class CombinedProduct {
 	
@@ -18,8 +19,7 @@ public class CombinedProduct {
     private LocalDate transaction_date ;
     private LocalTime transaction_time;
     private int qunatity;
-    
-    
+    private List<Integer> missingproducts;
 	public int getProduct_id() {
 		return product_id;
 	}
@@ -98,9 +98,15 @@ public class CombinedProduct {
 	public void setQunatity(int qunatity) {
 		this.qunatity = qunatity;
 	}
+	public List<Integer> getMissingproducts() {
+		return missingproducts;
+	}
+	public void setMissingproducts(List<Integer> missingproducts) {
+		this.missingproducts = missingproducts;
+	}
 	public CombinedProduct(int product_id, String product_name, float price, String shopName, float totalAmount,
 			String customerName, String phone, String email, float totalPrice, int transaction_id,
-			LocalDate transaction_date, LocalTime transaction_time, int qunatity) {
+			LocalDate transaction_date, LocalTime transaction_time, int qunatity, List<Integer> missingproducts) {
 		super();
 		this.product_id = product_id;
 		this.product_name = product_name;
@@ -115,6 +121,7 @@ public class CombinedProduct {
 		this.transaction_date = transaction_date;
 		this.transaction_time = transaction_time;
 		this.qunatity = qunatity;
+		this.missingproducts = missingproducts;
 	}
 	public CombinedProduct() {
 		super();
@@ -125,15 +132,9 @@ public class CombinedProduct {
 				+ ", shopName=" + shopName + ", TotalAmount=" + TotalAmount + ", customerName=" + customerName
 				+ ", phone=" + phone + ", email=" + email + ", totalPrice=" + totalPrice + ", transaction_id="
 				+ transaction_id + ", transaction_date=" + transaction_date + ", transaction_time=" + transaction_time
-				+ ", qunatity=" + qunatity + "]";
+				+ ", qunatity=" + qunatity + ", missingproducts=" + missingproducts + "]";
 	}
-
-    
-   
     
     
-    
-
 	
-
 }

@@ -3,6 +3,7 @@ package com.SpringBootProject.StudentDetails.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,4 +59,48 @@ public class OrderSummary {
             return null;
         }
     }
-}
+
+    public static InputStream GenerateError(List<CombinedProduct> orderDetails1) {
+        try {
+            XSSFWorkbook workbook = new XSSFWorkbook();
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            // Create a new sheet
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("GenerateErrorMessage");
+
+            // Create header row
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Product ID", "Error Message"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Populate data rows with missing product IDs
+            int rowNum = 1; // Start from the second row (after the header)
+            for (CombinedProduct product : orderDetails1) {
+                List<Integer> missingProductIds = product.getMissingproducts();
+                for (Integer productId : missingProductIds) {
+                    Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(productId);
+                    row.createCell(1).setCellValue("Product ID " + productId + " is not found!");
+                }
+            }
+
+            // Auto-size columns
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            workbook.write(out);
+            workbook.close();
+
+            return new ByteArrayInputStream(out.toByteArray());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+	} 
+	}
+

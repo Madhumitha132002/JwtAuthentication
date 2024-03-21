@@ -94,7 +94,9 @@ public class CustomerController {
 	        // Return a response indicating success
 	        return ResponseEntity.ok("Authentication successful");
 	    }
-	 @CrossOrigin(origins = "*")
+	
+	
+	@CrossOrigin(origins = "*")
 	@PostMapping("/Order")
 	public ResponseEntity<InputStreamResource> productorders(@RequestBody Orders orders) {
 	    String filename = "Bill.pdf";
@@ -115,45 +117,79 @@ public class CustomerController {
 	    ResponseEntity<List<CombinedProduct>> orderDetailsResponse = customerservice.purchasetheproduct(orders);
 	    List<CombinedProduct> orderDetails = orderDetailsResponse.getBody();
 	    System.out.println(orderDetails);
-	    if (orders.getType().equals("pdf")) {
-	        // Create an instance of PDFGenerator1
-	        PDFGenerator1 pdfGenerator = new PDFGenerator1(dataSource);
+	    if (orderDetails.get(0).getMissingproducts() == null || orderDetails.get(0).getMissingproducts().isEmpty()) {
+	        if (orders.getType().equals("pdf")) {
+	            // Create an instance of PDFGenerator1
+	            PDFGenerator1 pdfGenerator = new PDFGenerator1(dataSource);
 
-	        // Generate PDF bill
-	        ByteArrayInputStream bis = pdfGenerator.generateBill(orderDetails);
+	            // Generate PDF bill
+	            ByteArrayInputStream bis = pdfGenerator.generateBill(orderDetails);
 
-	        return ResponseEntity.ok()
-	                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-	                .contentType(MediaType.APPLICATION_PDF)
-	                .body(new InputStreamResource(bis));
-	    } else if (orders.getType().equals("excel")) {
-	        // Extract order details from the Orders object
-	        List<CombinedProduct> orderDetails1 = orderDetails; // Assuming getOrderDetails() is a method in your Orders class that returns the list of CombinedProduct
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+	                    .contentType(MediaType.APPLICATION_PDF)
+	                    .body(new InputStreamResource(bis));
+	        } else if (orders.getType().equals("excel")) {
+	            // Extract order details from the Orders object
+	            List<CombinedProduct> orderDetails1 = orderDetails; // Assuming getOrderDetails() is a method in your Orders class that returns the list of CombinedProduct
 
-	        // Generate Excel file
-	        InputStreamResource file = new InputStreamResource(OrderSummary.OrdersToExcel(orderDetails1));
-	        String filename1 = "orders.xlsx"; // Example filename
+	            // Generate Excel file
+	            InputStreamResource file = new InputStreamResource(OrderSummary.OrdersToExcel(orderDetails1));
+	            String filename1 = "orders.xlsx"; // Example filename
 
-	  
-	        return ResponseEntity.ok()
-		              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename1)
-		              .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-		              .body(file);
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename1)
+	                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+	                    .body(file);
+	        } else if (orders.getType().equals("csv")) {
+	            List<CombinedProduct> orderDetails2 = orderDetails;
+
+	            InputStreamResource file = new InputStreamResource(OrderSummaryCSV.OrdersToCSV(orderDetails2));
+	            String filename2 = "orders.csv"; // Filename
+
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename2)
+	                    .contentType(MediaType.TEXT_PLAIN)
+	                    .body(file);
+	        }
+	    } else {
+	        if (orders.getType().equals("pdf")) {
+	            // Create an instance of PDFGenerator1
+	            PDFGenerator1 pdfGenerator = new PDFGenerator1(dataSource);
+
+	            // Generate PDF bill
+	            ByteArrayInputStream bis = pdfGenerator.generateErrorBill(orderDetails);
+
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+	                    .contentType(MediaType.APPLICATION_PDF)
+	                    .body(new InputStreamResource(bis));
+	        } else if (orders.getType().equals("excel")) {
+	            // Extract order details from the Orders object
+	            List<CombinedProduct> orderDetails1 = orderDetails; // Assuming getOrderDetails() is a method in your Orders class that returns the list of CombinedProduct
+
+	            // Generate Excel file
+	            InputStreamResource file = new InputStreamResource(OrderSummary.GenerateError(orderDetails1));
+	            String filename1 = "error.xlsx"; // Example filename
+
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename1)
+	                    .contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+	                    .body(file);
+	        } else if (orders.getType().equals("csv")) {
+	            List<CombinedProduct> orderDetails2 = orderDetails;
+
+	            InputStreamResource file = new InputStreamResource(OrderSummaryCSV.GenerateError(orderDetails2));
+	            String filename2 = "error.csv"; // Filename
+
+	            return ResponseEntity.ok()
+	                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename2)
+	                    .contentType(MediaType.TEXT_PLAIN)
+	                    .body(file);
+	        }
 	    }
-       else if(orders.getType().equals("csv")) {
-	       
-    	   List<CombinedProduct> orderDetails2=orderDetails;
-    	   
-    	   InputStreamResource file=new InputStreamResource(OrderSummaryCSV.OrdersToCSV(orderDetails2));
-    	   String filename2="orders.csv";//Filename
-    	   
-    	   return ResponseEntity.ok()
-    				  .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
-    				  .contentType(MediaType.parseMediaType("application/csv"))
-    				  .body(file);
-	    }
-		return null;    
+
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
-	
 }
 

@@ -3,6 +3,7 @@ package com.SpringBootProject.StudentDetails.Repository;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,125 +57,143 @@ public class customerDetailsRepo {
 	        return -1; // Indicate failure
 	    }
 	}
-	  public List<CombinedProduct> purchasetheproduct(Orders orders) {
+	 public List<CombinedProduct> purchasetheproduct(Orders orders) {
 	        try {
-	        	float totalAmount=0;
-	        	float totalPrice=0;
+	            float totalPrice = 0;
+
 	            System.out.println("inside the repo");
-	            
+
 	            String customerDetailsQuery = "SELECT * FROM customerDetails WHERE customerid = ?";
 	            List<CustomerModel> customermodel = jdbcTemplate.query(
 	                    customerDetailsQuery,
 	                    new BeanPropertyRowMapper<>(CustomerModel.class),
-	                    orders.getCustomerId());
-	            
+	                    orders.getCustomerId()
+	            );
+
 	            System.out.println(customermodel);
-	            List<Product> products = orders.getProducts(); // Assuming you have a method to retrieve products
+	            List<Product> products = orders.getProducts();
 	            List<Integer> productIds = new ArrayList<>();
-	            List<Integer> productQuantities = new ArrayList<>();
+	            Map<Integer, Integer> productQuantityMap = new HashMap<>();
 
 	            for (Product product : products) {
 	                productIds.add(product.getProductId());
-	                productQuantities.add(product.getQuantity());
+	                productQuantityMap.put(product.getProductId(), product.getQuantity());
 	            }
-	         
-	            // Now you have two separate arrays for product IDs rand quantities
+
 	            System.out.println("Product IDs: " + productIds);
-	            System.out.println("Product Quantities: " + productQuantities);
-	            
-	         // Assuming you have retrieved the list of products from the order object
-	            List<Product> product = orders.getProducts();
+	            System.out.println("Product Quantities: " + productQuantityMap);
 
-	            // Initialize a map to store product quantities
-	            Map<Integer, Integer> productQuantityMap = new HashMap<>();
+	            // Check if all product IDs exist in the database
+	            boolean allProductIdsExist = true;
+	            List<Integer> missingProductIds = new ArrayList<>();
 
-	            // Iterate through the products and populate the map
-	            for (Product product1 : products) {
-	                productQuantityMap.put(product1.getProductId(), product1.getQuantity());
-	            }
-
-	            // Now productQuantityMap contains product quantities mapped to their IDs
-	            System.out.println(productQuantityMap);
-
-
-
-	         // Construct the SQL query with the correct 
-	            StringBuilder combinedQuery = new StringBuilder("SELECT p.product_id, p.product_name, p.price, s.shopName " +
-	                                   "FROM products p " +
-	                                   "INNER JOIN Shops s ON p.shop_id = s.shopId " +
-	                                   "WHERE p.product_id IN (");
-	            
+	            String checkProductIdsQuery = "SELECT product_id FROM products WHERE product_id IN (";
 	            for (int i = 0; i < productIds.size(); i++) {
-	                combinedQuery.append("?");
+	                checkProductIdsQuery += "?";
 	                if (i < productIds.size() - 1) {
-	                    combinedQuery.append(", ");
+	                    checkProductIdsQuery += ", ";
 	                }
 	            }
-	            combinedQuery.append(")");
+	            checkProductIdsQuery += ")";
 
-	            // Execute the SQL query with the dynamically constructed query string and product IDs
-	            List<CombinedProduct> combinedProducts = jdbcTemplate.query(
-	                    combinedQuery.toString(),
-	                    new BeanPropertyRowMapper<>(CombinedProduct.class),
-	                    productIds.toArray() // Pass the array of product IDs as arguments
-	            );
+	            List<Integer> existingProductIds = jdbcTemplate.queryForList(checkProductIdsQuery, Integer.class, productIds.toArray());
 
-	            // Print the retrieved combined products
-	            System.out.println(combinedProducts);
-
-	         // Iterate through the combined products
-	            for (CombinedProduct combinedProduct : combinedProducts) {
-	                // Get the product ID and quantity for the combined product
-	                int productId = combinedProduct.getProduct_id();
-	                int quantity =productQuantityMap.getOrDefault(productId, 0); // Get quantity from productQuantities map
-
-	                // Check if the product ID exists in the productsDetailsMap
-	                if (productQuantityMap.containsKey(productId)) {
-	                    // Get the product details
-	                    Integer product1 = productQuantityMap.get(productId);
-	                    
-	                    // Calculate the total amount for the combined product
-	                    float totalAmount1 = combinedProduct.getPrice() * quantity;
-
-	                    // Set quantity, total amount, and total price for the combined product
-	                    combinedProduct.setQunatity(quantity);
-	                    combinedProduct.setTotalAmount(totalAmount1);
-	                    combinedProduct.setTotalPrice(totalPrice);
-	                    
-	                    // Update total price
-	                    totalPrice += totalAmount1;
+	            // Iterate through productIds to find missing ones
+	            for (Integer productId : productIds) {
+	                if (!existingProductIds.contains(productId)) {
+	                    missingProductIds.add(productId);
 	                }
 	            }
 
-	            // Set total price for all combined products
-	            for (CombinedProduct combinedProduct : combinedProducts) {
-	                combinedProduct.setTotalPrice(totalPrice);
+	            if (!missingProductIds.isEmpty()) {
+	                allProductIdsExist = false;
+	                System.out.println("Missing Product IDs: " + missingProductIds);
+
+	                CombinedProduct combinedProductWithMissing = new CombinedProduct();
+	                combinedProductWithMissing.setMissingproducts(missingProductIds);
+	                List<CombinedProduct> combinedProducts = new ArrayList<>();
+	                combinedProducts.add(combinedProductWithMissing);
+
+	                return combinedProducts; // Return combined product with missing IDs
 	            }
 
 
-	// Extract customer details from the customer object
-	String customerName = customermodel.get(0).getCustomerName();
-	String phone = customermodel.get(0).getPhonenumber();
-	String email = customermodel.get(0).getEmail();
+	            if (allProductIdsExist) {
+	                // Construct the SQL query with the correct 
+	                StringBuilder combinedQuery = new StringBuilder("SELECT p.product_id, p.product_name, p.price, COALESCE(s.shopName, 'Product Not Found') AS shopName " +
+	                        "FROM products p " +
+	                        "LEFT JOIN Shops s ON p.shop_id = s.shopId " +
+	                        "WHERE p.product_id IN (");
 
-	// Set customer details, total price, transaction ID, date, and time to each combined product
-	for (CombinedProduct combinedProduct : combinedProducts) {
-	    combinedProduct.setCustomerName(customerName);
-	    combinedProduct.setPhone(phone);
-	    combinedProduct.setEmail(email);
-	    combinedProduct.setTotalPrice(totalPrice); // Assuming you have calculated this earlier
-	    combinedProduct.setTransaction_id(orders.getTransactionId()); // Example transaction ID
-	    combinedProduct.setTransaction_date(orders.getTransaction_date()); // Example transaction date
-	    combinedProduct.setTransaction_time(orders.getTransaction_time()); // Example transaction time
-	}
+	                for (int i = 0; i < productIds.size(); i++) {
+	                    combinedQuery.append("?");
+	                    if (i < productIds.size() - 1) {
+	                        combinedQuery.append(", ");
+	                    }
+	                }
+	                combinedQuery.append(")");
 
-	System.out.println(combinedProducts);
-	return combinedProducts;
+	                // Execute the SQL query with the dynamically constructed query string and product IDs
+	                List<CombinedProduct> combinedProducts = jdbcTemplate.query(
+	                        combinedQuery.toString(),
+	                        new BeanPropertyRowMapper<>(CombinedProduct.class),
+	                        productIds.toArray() // Pass the array of product IDs as arguments
+	                );
 
+	                // Print the retrieved combined products
+	                System.out.println(combinedProducts);
+
+	                // Iterate through the combined products
+	                for (CombinedProduct combinedProduct : combinedProducts) {
+	                    int productId = combinedProduct.getProduct_id();
+	                    int quantity = productQuantityMap.getOrDefault(productId, 0); // Get quantity from productQuantities map
+
+	                    if (productQuantityMap.containsKey(productId)) {
+	                        float totalAmount = combinedProduct.getPrice() * quantity;
+
+	                        combinedProduct.setQunatity(quantity); // Corrected method name to setQuantity
+	                        combinedProduct.setTotalAmount(totalAmount);
+	                        combinedProduct.setTotalPrice(totalPrice);
+
+	                        totalPrice += totalAmount;
+	                    } else {
+	                        // Handle the case where the product ID is not found
+	                        System.out.println("Product ID " + productId + " not found in the database.");
+	                        combinedProduct.setQunatity(0); // Corrected method name to setQuantity
+	                        combinedProduct.setTotalAmount(0);
+	                        combinedProduct.setTotalPrice(0);
+	                    }
+	                }
+
+	                // Extract customer details from the customer object
+	                String customerName = customermodel.get(0).getCustomerName();
+	                String phone = customermodel.get(0).getPhonenumber();
+	                String email = customermodel.get(0).getEmail();
+
+	                // Set customer details, total price, transaction ID, date, and time to each combined product
+	                for (CombinedProduct combinedProduct : combinedProducts) {
+	                    combinedProduct.setCustomerName(customerName);
+	                    combinedProduct.setPhone(phone);
+	                    combinedProduct.setEmail(email);
+	                    combinedProduct.setTotalPrice(totalPrice); // Assuming you have calculated this earlier
+	                    combinedProduct.setTransaction_id(orders.getTransactionId()); // Example transaction ID
+	                    combinedProduct.setTransaction_date(orders.getTransaction_date()); // Example transaction date
+	                    combinedProduct.setTransaction_time(orders.getTransaction_time()); // Example transaction time
+	                }
+
+	                System.out.println(combinedProducts);
+	                return combinedProducts;
+	            } else {
+	                // At least one product ID does not exist in the database, display an error message or handle it accordingly
+	                System.out.println(" Product ID does not exist in the database.");
+	                return null; // Return null to indicate failure
+	            }
 	        } catch (Exception e) {
 	            // Handle exceptions
 	            e.printStackTrace();
-	            return null;
+	            return null; // Return null to indicate failure
 	        }
 	    }
+
+
 }

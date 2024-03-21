@@ -2,6 +2,9 @@ package com.SpringBootProject.StudentDetails.Service;
 
 import com.SpringBootProject.StudentDetails.Model.CombinedProduct;
 import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfPCell;
@@ -150,6 +153,56 @@ public class PDFGenerator1 {
             e.printStackTrace();
         }
     }
+
+    public ByteArrayInputStream generateErrorBill(List<CombinedProduct> orderDetails) {
+        Document document = new Document(PageSize.A4);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        try {
+            PdfWriter.getInstance(document, out);
+            document.open();
+
+            PdfPTable table = new PdfPTable(1);
+            table.setWidthPercentage(100);
+
+            // Add title
+            PdfPCell titleCell = new PdfPCell();
+            titleCell.setBorder(PdfPCell.NO_BORDER);
+            Font fontTitle = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+            fontTitle.setSize(20);
+            fontTitle.setColor(0,0,128);
+            Paragraph title = new Paragraph("Error Report: Missing Products",fontTitle);
+            title.setAlignment(Paragraph.ALIGN_CENTER);
+            titleCell.addElement(title);
+            titleCell.addElement(new Paragraph("\n")); // Add some space
+            table.addCell(titleCell);
+
+            // Add missing product IDs
+            for (Integer productId : orderDetails.get(0).getMissingproducts()) {
+                PdfPCell cell = new PdfPCell();
+                cell.setBorder(PdfPCell.NO_BORDER);
+                Font font = FontFactory.getFont(FontFactory.TIMES_ROMAN);
+                font.setColor(new java.awt.Color(255,0,0));
+                font.setSize(16);
+                Paragraph paragraph = new Paragraph("Product ID " + productId + " is not found!",font);
+                paragraph.setAlignment(Paragraph.ALIGN_LEFT);
+                cell.addElement(paragraph);
+                table.addCell(cell);
+            }
+
+            // Add the table to the document
+            document.add(table);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } finally {
+            if (document != null) {
+                document.close();
+            }
+        }
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
 
 
 }
