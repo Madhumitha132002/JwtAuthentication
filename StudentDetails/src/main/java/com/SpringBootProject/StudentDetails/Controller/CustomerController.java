@@ -1,51 +1,31 @@
 package com.SpringBootProject.StudentDetails.Controller;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-
 import javax.sql.DataSource;
-
-import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.SpringBootProject.StudentDetails.Model.CombinedProduct;
 import com.SpringBootProject.StudentDetails.Model.CustomerModel;
 import com.SpringBootProject.StudentDetails.Model.Orders;
-import com.SpringBootProject.StudentDetails.Model.Product;
-import com.SpringBootProject.StudentDetails.Model.StudentModel;
 import com.SpringBootProject.StudentDetails.Service.CustomerService;
-import com.SpringBootProject.StudentDetails.Service.MyUserServiceDetails;
 import com.SpringBootProject.StudentDetails.Service.OrderSummary;
 import com.SpringBootProject.StudentDetails.Service.OrderSummaryCSV;
-import com.SpringBootProject.StudentDetails.Service.PDFGenerator;
 import com.SpringBootProject.StudentDetails.Service.PDFGenerator1;
-import com.SpringBootProject.StudentDetails.dto.AuthenticationRequest;
 import com.SpringBootProject.StudentDetails.util.StudentJWTUtil;
-
-import jakarta.servlet.http.HttpServletResponse;
 
  
 
